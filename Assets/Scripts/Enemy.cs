@@ -5,12 +5,13 @@ using UnityEngine;
 public class Enemy : MovingObject
 {
     public int playerDamage;
+    public AudioClip enemyAttack1;
+    public AudioClip enemyAttack2;
 
     private Animator animator;
     private Transform target;
     private bool skipMove;
 
-    // Start is called before the first frame update
     protected override void Start()
     {
         GameManager.instance.addEnemyToList(this);
@@ -46,6 +47,7 @@ public class Enemy : MovingObject
     {
         Player hit = component as Player;
         animator.SetTrigger("enemyAttack");
+        SoundManager.instance.RandoimizeSfx(enemyAttack1, enemyAttack2);
         hit.LoseFood(playerDamage);
     }
 }

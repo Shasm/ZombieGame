@@ -10,6 +10,8 @@ public abstract class MovingObject : MonoBehaviour
     private BoxCollider2D boxCollider;
     private Rigidbody2D rd2d;
     private float inverseMoveTime;
+    private bool isMoving;
+
     protected virtual void Start()
     {//Protected, virtual functions can be overridden by inheriting classes.
         boxCollider = GetComponent<BoxCollider2D>();
@@ -27,9 +29,9 @@ public abstract class MovingObject : MonoBehaviour
         boxCollider.enabled = false;
         hit = Physics2D.Linecast(start, end, blockingLayer);
 
-        boxCollider.enabled = false;
+        boxCollider.enabled = true;
 
-        if (hit.transform == null)
+        if (hit.transform == null && !isMoving)
         {
             StartCoroutine(SmoothMovement(end));
             return true;
@@ -39,6 +41,7 @@ public abstract class MovingObject : MonoBehaviour
 
     protected IEnumerator SmoothMovement(Vector3 end)
     {
+        isMoving = true;
         float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
         while (sqrRemainingDistance > float.Epsilon)
         {
@@ -49,10 +52,10 @@ public abstract class MovingObject : MonoBehaviour
             sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             yield return null;
         }
+        rd2d.MovePosition(end);
+        isMoving = false;
     }
 
-    protected abstract void OnCantMove<T>(T component)
-        where T : Component;
     protected virtual void AttemptMove<T>(int xDir, int yDir)
         where T : Component
     {
@@ -68,4 +71,6 @@ public abstract class MovingObject : MonoBehaviour
             OnCantMove(hitComponent);
         }
     }
+    protected abstract void OnCantMove<T>(T component)
+        where T : Component;
 }

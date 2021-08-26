@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
         level++;
         initGame();
     }
-
     void Awake()
     {
         if (instance == null)
